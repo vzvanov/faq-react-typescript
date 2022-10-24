@@ -1,24 +1,24 @@
 import React, { ReactElement } from "react";
-import FaqService from "../services/FaqService";
+import FaqService from "../services/AnswerService";
 import { FiDelete } from 'react-icons/fi';
-import { Faq } from "../faqs";
+import { Answer } from "../answers";
 import { useNavigate } from "react-router-dom";
 
 
-interface Props extends Faq {
+interface Props extends Answer {
   onChangeList: () => void,
 }
 
-const ListRow = ({ _id, summary, info, onChangeList }: Props): ReactElement => {
+const AnswerListRow = ({ _id, summary, info, onChangeList }: Props): ReactElement => {
   const navigate = useNavigate();
 
   const deleteFaq = (): void => {
-    FaqService.deleteFaq(_id);
+    FaqService.deleteAnswer(_id);
     onChangeList();
   }
 
   const handleRowClick = (): void => {
-    navigate(`/faq/${_id}`);
+    navigate(`/answer/${_id}`, { replace: true });
   }
 
   return (
@@ -37,4 +37,4 @@ const ListRow = ({ _id, summary, info, onChangeList }: Props): ReactElement => {
   );
 };
 
-export default ListRow;
+export default AnswerListRow;

@@ -1,16 +1,16 @@
 import React from "react";
-import ListRow from "../components/ListRow";
-import { Faq } from "../faqs";
+import AnswerListRow from "../components/AnswerListRow";
+import { Answer } from "../answers";
 import { CgAddR } from 'react-icons/cg';
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  faqs: Array<Faq>,
+  answers: Array<Answer>,
   changeCount: number,
   setChangeCount: (changeCount: number) => void,
 }
 
-const Admin = ({ faqs, changeCount, setChangeCount }: Props) => {
+const Admin = ({ answers, changeCount, setChangeCount }: Props) => {
   const navigate = useNavigate();
 
   const onChangeList = () => {
@@ -18,7 +18,7 @@ const Admin = ({ faqs, changeCount, setChangeCount }: Props) => {
   }
 
   const handleAddButtonClick = (): void => {
-    navigate('/faq');
+    navigate('/answers/new', { replace: true });
   }
 
   return (
@@ -27,8 +27,8 @@ const Admin = ({ faqs, changeCount, setChangeCount }: Props) => {
         <div className="list_add">
           <CgAddR className={"row-icons"} size={30} onClick={handleAddButtonClick} />
         </div>
-        {faqs.map(({ _id, summary, info }) =>
-          <ListRow
+        {answers.map(({ _id, summary, info }) =>
+          <AnswerListRow
             key={_id}
             _id={_id}
             summary={summary}

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from "react";
+import React, { ReactElement } from "react";
 import FaqsList from "../components/FaqsList";
 import womanDesktop from '../assets/images/illustration-woman-online-desktop.svg';
 import bgDesktop from '../assets/images/bg-pattern-desktop.svg';
@@ -6,15 +6,15 @@ import womanMobile from '../assets/images/illustration-woman-online-mobile.svg';
 import bgMobile from '../assets/images/bg-pattern-mobile.svg';
 import LogoBox from '../components/LogoBox';
 import LogoFaq from '../components/LogoFaq';
-import { Faq } from "../faqs";
+import { Answer } from "../answers";
 
 interface Props {
-  faqs: Array<Faq>,
+  answers: Array<Answer>,
 }
 
-const Home = ({ faqs }: Props): ReactElement => {
+const Home = ({ answers }: Props): ReactElement => {
   return (
-    <main>
+    <>
       <LogoBox />
       <div className="faq">
         <LogoFaq
@@ -30,11 +30,11 @@ const Home = ({ faqs }: Props): ReactElement => {
         <div className="container">
           <h1 className="faq_title">FAQ</h1>
           <FaqsList
-            faqs={faqs}
+            answers={answers}
           />
         </div>
       </div>
-    </main>
+    </>
   );
 };
 

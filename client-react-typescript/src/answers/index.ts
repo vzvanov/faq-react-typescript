@@ -1,12 +1,12 @@
 
-export type Faq = {
+export type Answer = {
   readonly _id: string,
   readonly summary: string,
   readonly info: string,
   __v?: number,
 }
 
-export const faqs: Array<Faq> = [
+export const answers: Array<Answer> = [
   {
     "_id": "6342fb32a75c4cd99af6f94b",
     "summary": "Do you provide additional support?",

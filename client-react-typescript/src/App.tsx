@@ -1,51 +1,60 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import './App.css';
-import Header from './components/Header';
 
 import Admin from './pages/Admin';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
-import FaqService from './services/FaqService';
-import { Faq } from "./faqs";
-import FaqPage from './pages/FaqPage';
+import { Answer } from "./answers";
+import { AnswerCreatePage } from './pages/AnswerCreatePage';
+import { Layout } from './components/Layout';
+import AnswerService from './services/AnswerService';
+import { AnswerEditPage, answerLoader } from './pages/AnswerEditPage';
+import Errorpage from './pages/Errorpage';
 
 function App() {
-  const [faqs, setFaqs] = useState<Array<Faq>>([]);
+  const [answers, setAnswers] = useState<Array<Answer>>([]);
   const [changeCount, setChangeCount] = useState<number>(0);
 
   useEffect(() => {
-    FaqService.getAllFaqs(setFaqs);
+    AnswerService.getAllAnswers(setAnswers);
   }, [changeCount])
+
+  const router = createBrowserRouter(createRoutesFromElements(
+    <Route path='/' element={<Layout />} >
+      <Route index element={
+        <Home
+          answers={answers}
+        />}
+      />
+      <Route path="admin" element={
+        <Admin
+          answers={answers}
+          changeCount={changeCount}
+          setChangeCount={setChangeCount}
+        />}
+      />
+      <Route path="/answers/new" element={
+        <AnswerCreatePage
+          changeCount={changeCount}
+          setChangeCount={setChangeCount}
+        />}
+      />
+      <Route path="/answer/:id" element={
+        <AnswerEditPage
+          changeCount={changeCount}
+          setChangeCount={setChangeCount}
+        />}
+        loader={answerLoader}
+        errorElement={<Errorpage />}
+      />
+      <Route path="*" element={<NotFound />} />
+    </Route>
+  ));
 
   return (
     <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home
-          faqs={faqs}
-        />} />
-        <Route path="/admin" element={<Admin
-          faqs={faqs}
-          changeCount={changeCount}
-          setChangeCount={setChangeCount}
-        />} />
-        <Route path="/faq" element={<FaqPage
-          changeCount={changeCount}
-          setChangeCount={setChangeCount}
-          isCreate={true}
-        />} />
-        <Route path="/faq/:id" element={<FaqPage
-          changeCount={changeCount}
-          setChangeCount={setChangeCount}
-          isCreate={false}
-        />} />
-        <Route path="*" element={<NotFound>
-          <div>
-            <h2>This page was not found</h2>
-          </div>
-        </NotFound>} />
-      </Routes>
+      <RouterProvider router={router} />
     </>
   );
 }

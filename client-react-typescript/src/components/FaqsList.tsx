@@ -1,15 +1,15 @@
 import React, { ReactElement } from "react";
-import { Faq } from "../faqs";
-import FaqItem from "./FaqItem";
+import { Answer } from "../answers";
+import FaqItem from "./AnswerItem";
 
 interface Props {
-  faqs: Array<Faq>,
+  answers: Array<Answer>,
 }
 
-const FaqsList = ({ faqs }: Props): ReactElement => {
+const FaqsList = ({ answers }: Props): ReactElement => {
   return (
     <>
-      {faqs.map(({ _id, summary, info }: Faq): ReactElement =>
+      {answers.map(({ _id, summary, info }: Answer): ReactElement =>
         <FaqItem
           key={_id}
           summary={summary}

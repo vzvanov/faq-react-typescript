@@ -278,8 +278,16 @@ input .text:focus {
   margin-bottom: 1rem;
 }
 
-.modal__row-buttons button {
+.modal__row-buttons>.row-icons {
   margin-right: 1rem;
+}
+
+.active-link {
+  text-decoration: underline;
+}
+
+.notfound {
+  text-align: center;
 }
 
 /* https://bootstrap-4.ru/docs/5.2/layout/breakpoints/ */

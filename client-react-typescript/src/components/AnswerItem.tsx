@@ -1,8 +1,8 @@
 import React, { ReactElement } from "react";
-import { Faq } from "../faqs";
+import { Answer } from "../answers";
 import iconArrowDown from '../assets/images/icon-arrow-down.svg';
 
-const FaqItem = ({ summary, info }: Omit<Faq, '_id'>): ReactElement => {
+const AnswerItem = ({ summary, info }: Omit<Answer, '_id'>): ReactElement => {
   return (
     <details>
       <summary>{summary}
@@ -13,4 +13,4 @@ const FaqItem = ({ summary, info }: Omit<Faq, '_id'>): ReactElement => {
   );
 };
 
-export default FaqItem;
+export default AnswerItem;
