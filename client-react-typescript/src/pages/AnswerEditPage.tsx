@@ -1,100 +1,77 @@
-import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
-import { defer, json, useLoaderData, useNavigate } from "react-router-dom";
-import AnswerService from "../services/AnswerService";
+import React from "react";
+import { defer, useActionData, useLoaderData, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri"
+import AnswersService from "../services/AnswersService";
+import NewAnswer from "../components/NewAnswer";
+import Message from "../components/Message";
 
-interface Props {
-  changeCount: number,
-  setChangeCount: (count: number) => void,
-}
-
-const AnswerEditPage = ({ changeCount, setChangeCount }: Props) => {
-  const { answer, id }: any = useLoaderData();
-
-  const [summary, setSummary] = useState<string>(answer.summary);
-  const [info, setInfo] = useState<string>(answer.info);
-
+const AnswerEditPage = () => {
   const navigate = useNavigate();
+  const { answer, id }: any = useLoaderData();
+  const data: any = useActionData();
 
-  // const { id } = useParams();
-  // useEffect(() => {
-  //   AnswerService.getAnswerById(String(id), setFaqData);
-  // }, []);
-  // 
-  // const setFaqData = ({ summary, info }: Answer) => {
-  //   setSummary(summary);
-  //   setInfo(info);
-  // }
+  let message: React.ReactElement | undefined = undefined;
 
-  const goBack = (): void => navigate('/', { replace: true });
-
-  const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const { target: { value: textareaText } } = e;
-    setSummary(textareaText);
-  };
-
-  const handleInfoChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const { target: { value: textareaText } } = e;
-    setInfo(textareaText);
-  };
-
-  const handleSave = (): void => {
-    AnswerService.putAnswer(String(id), summary, info);
-    setChangeCount(changeCount + 1);
-    goBack();
+  if (data && data.hasOwnProperty('result')) {
+    if (data.result === true) {
+      message = <Message messageType="info-message" message={data.message} />
+    }
+    if (data.result === false) {
+      message = <Message messageType="alert-message" message={data.message} />
+    }
   }
+
+  const goBack = (): void => navigate(-1);
 
   return (
     <div className="faq_container">
       <div className="modal__title">
-        <h3>Answer</h3>
+        <h3>Edit answer</h3>
         <div className="modal__row-buttons">
-          <FiEdit className={"row-icons"} size={30} onClick={handleSave} />
           <RiArrowGoBackLine className={"row-icons"} size={30} onClick={goBack} />
         </div>
       </div>
-      <div className="modal__row">
-        <div className="modal__row-summary">
-          <textarea
-            className="text"
-            placeholder="Summary"
-            value={summary}
-            rows={2}
-            onChange={handleSummaryChange}
-          >
-          </textarea>
-        </div>
-        <div className="modal__row-info">
-          <textarea
-            className="text"
-            placeholder="Info"
-            value={info}
-            rows={10}
-            onChange={handleInfoChange}
-          >
-          </textarea>
-        </div>
-      </div>
+      {message}
+      <NewAnswer
+        _summary={answer.summary}
+        _info={answer.info} _id={id}
+        _action={`/answer/${id}`}
+        submitting={false}
+      />
     </div>
   );
 };
 
-const getAnswerById = async (id: string) => {
-  try {
-    const { data } = await AnswerService.fetchAnswerById(id);
-    return data;
-  } catch (error: any) {
-    throw json({ message: error?.message, reason: error?.response.statusText }, { status: error?.response.status });
-  }
-}
-
 const answerLoader = async ({ params }: any) => {
   const { id } = params;
   return defer({
-    answer: await getAnswerById(id),
+    answer: await AnswersService.getAnswerById(id),
     id,
   })
 }
 
-export { AnswerEditPage, answerLoader };
+const editAnswerAction = async ({ request }: any) => {
+
+  const formData = await request.formData();
+
+  const id: string | undefined = formData.get('id');
+  const summary: string | undefined = formData.get('summary');
+  const info: string | undefined = formData.get('info');
+
+  if (!summary || !info) {
+    return {
+      message: `Invalid input...`,
+      result: false,
+    }
+  }
+
+  await AnswersService.editAnswer(String(id), summary, info);
+
+  return {
+    message: `Answer was successfully updated...`,
+    result: true,
+  }
+
+}
+
+export { AnswerEditPage, answerLoader, editAnswerAction };

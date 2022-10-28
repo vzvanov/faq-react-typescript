@@ -1,24 +1,20 @@
 import React, { ReactElement } from "react";
-import FaqService from "../services/AnswerService";
 import { FiDelete } from 'react-icons/fi';
 import { Answer } from "../answers";
 import { useNavigate } from "react-router-dom";
+import AnswersService from "../services/AnswersService";
 
 
-interface Props extends Answer {
-  onChangeList: () => void,
-}
-
-const AnswerListRow = ({ _id, summary, info, onChangeList }: Props): ReactElement => {
+const AnswerListRow = ({ _id, summary, info }: Answer): ReactElement => {
   const navigate = useNavigate();
 
-  const deleteFaq = (): void => {
-    FaqService.deleteAnswer(_id);
-    onChangeList();
+  const deleteFaq = async () => {
+    await AnswersService.deleteAnswer(_id);
+    navigate('/admin', { replace: true });
   }
 
   const handleRowClick = (): void => {
-    navigate(`/answer/${_id}`, { replace: true });
+    navigate(`/answer/${_id}`);
   }
 
   return (

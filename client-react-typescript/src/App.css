@@ -157,6 +157,10 @@ footer {
   filter: brightness(0.7);
 }
 
+.btn-input {
+  background-color: initial;
+}
+
 .list_add {
   margin-left: 1rem;
 }
@@ -288,6 +292,20 @@ input .text:focus {
 
 .notfound {
   text-align: center;
+}
+
+.alert-message {
+  color: red;
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  margin-bottom: 1rem;
+}
+
+.info-message {
+  color: green;
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  margin-bottom: 1rem;
 }
 
 /* https://bootstrap-4.ru/docs/5.2/layout/breakpoints/ */

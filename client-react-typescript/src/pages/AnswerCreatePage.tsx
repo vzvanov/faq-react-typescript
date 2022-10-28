@@ -1,35 +1,28 @@
-import React, { useState } from "react";
-import { FiEdit } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import AnswerService from "../services/AnswerService";
+import React from "react";
+import { useActionData, useNavigate } from "react-router-dom";
 import { RiArrowGoBackLine } from "react-icons/ri"
+import NewAnswer from "../components/NewAnswer";
+import Message from "../components/Message";
+import AnswersService from "../services/AnswersService";
 
-interface Props {
-  changeCount: number,
-  setChangeCount: (count: number) => void,
-}
-
-const AnswerCreatePage = ({ changeCount, setChangeCount }: Props) => {
-  const [summary, setSummary] = useState<string>("");
-  const [info, setInfo] = useState<string>("");
+const AnswerCreatePage = () => {
   const navigate = useNavigate();
+  const data: any = useActionData();
 
-  const goBack = (): void => navigate('/', { replace: true });
+  const goBack = (): void => navigate(-1);
 
-  const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const { target: { value: textareaText } } = e;
-    setSummary(textareaText);
-  };
+  let message: React.ReactElement | undefined = undefined;
+  let submitting: boolean = false;
 
-  const handleInfoChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const { target: { value: textareaText } } = e;
-    setInfo(textareaText);
-  };
-
-  const handleSave = (): void => {
-    AnswerService.postAnswer(summary, info);
-    setChangeCount(changeCount + 1);
-    goBack();
+  if (data && data.hasOwnProperty('result')) {
+    if (data.result === true) {
+      submitting = true;
+      message = <Message messageType="info-message" message={data.message} />
+      setTimeout(() => navigate('/admin', { replace: true }), 1500);
+    }
+    if (data.result === false) {
+      message = <Message messageType="alert-message" message={data.message} />
+    }
   }
 
   return (
@@ -37,34 +30,41 @@ const AnswerCreatePage = ({ changeCount, setChangeCount }: Props) => {
       <div className="modal__title">
         <h3>Create new answer</h3>
         <div className="modal__row-buttons">
-          <FiEdit className={"row-icons"} size={30} onClick={handleSave} />
           <RiArrowGoBackLine className={"row-icons"} size={30} onClick={goBack} />
         </div>
       </div>
-      <div className="modal__row">
-        <div className="modal__row-summary">
-          <textarea
-            className="text"
-            placeholder="Summary"
-            value={summary}
-            rows={2}
-            onChange={handleSummaryChange}
-          >
-          </textarea>
-        </div>
-        <div className="modal__row-info">
-          <textarea
-            className="text"
-            placeholder="Info"
-            value={info}
-            rows={10}
-            onChange={handleInfoChange}
-          >
-          </textarea>
-        </div>
-      </div>
+      {message}
+      <NewAnswer
+        _summary=''
+        _info=''
+        _id=''
+        _action='/answers/new'
+        submitting={submitting}
+      />
     </div>
   );
 };
 
-export { AnswerCreatePage };
+const createAnswerAction = async ({ request }: any) => {
+  const formData = await request.formData();
+
+  const summary: string | undefined = formData.get('summary');
+  const info: string | undefined = formData.get('info');
+
+  if (!summary || !info) {
+    return {
+      message: `Invalid input...`,
+      result: false,
+    }
+  }
+
+  await AnswersService.createAnswer(summary, info);
+
+  return {
+    message: `Answer was successfully created...`,
+    result: true,
+  }
+
+}
+
+export { AnswerCreatePage, createAnswerAction };

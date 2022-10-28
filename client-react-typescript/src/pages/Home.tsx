@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, Suspense } from "react";
 import FaqsList from "../components/FaqsList";
 import womanDesktop from '../assets/images/illustration-woman-online-desktop.svg';
 import bgDesktop from '../assets/images/bg-pattern-desktop.svg';
@@ -6,13 +6,16 @@ import womanMobile from '../assets/images/illustration-woman-online-mobile.svg';
 import bgMobile from '../assets/images/bg-pattern-mobile.svg';
 import LogoBox from '../components/LogoBox';
 import LogoFaq from '../components/LogoFaq';
-import { Answer } from "../answers";
+import { Await, defer, useLoaderData } from "react-router-dom";
+import AnswersService from "../services/AnswersService";
 
 interface Props {
-  answers: Array<Answer>,
+
 }
 
-const Home = ({ answers }: Props): ReactElement => {
+const Home = (): ReactElement => {
+  const { answers }: any = useLoaderData();
+
   return (
     <>
       <LogoBox />
@@ -29,13 +32,26 @@ const Home = ({ answers }: Props): ReactElement => {
         />
         <div className="container">
           <h1 className="faq_title">FAQ</h1>
-          <FaqsList
-            answers={answers}
-          />
+          <Suspense fallback={<h2>Loading...</h2>}>
+            <Await resolve={answers}>
+              {
+                (resolvedAnswers) => (
+                  <>
+                    {<FaqsList answers={resolvedAnswers} />}
+                  </>)
+              }
+            </Await>
+          </Suspense>
         </div>
       </div>
     </>
   );
 };
 
-export default Home;
+const answersLoader = async () => {
+  return defer({
+    answers: AnswersService.getAllAnswers(),
+  })
+}
+
+export { Home, answersLoader };

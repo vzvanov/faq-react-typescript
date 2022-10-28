@@ -1,24 +1,15 @@
-import React from "react";
+import React, { Suspense } from "react";
 import AnswerListRow from "../components/AnswerListRow";
 import { Answer } from "../answers";
 import { CgAddR } from 'react-icons/cg';
-import { useNavigate } from "react-router-dom";
+import { Await, useLoaderData, useNavigate } from "react-router-dom";
 
-interface Props {
-  answers: Array<Answer>,
-  changeCount: number,
-  setChangeCount: (changeCount: number) => void,
-}
-
-const Admin = ({ answers, changeCount, setChangeCount }: Props) => {
+const Admin = () => {
+  const { answers }: any = useLoaderData();
   const navigate = useNavigate();
 
-  const onChangeList = () => {
-    setChangeCount(changeCount + 1);
-  }
-
   const handleAddButtonClick = (): void => {
-    navigate('/answers/new', { replace: true });
+    navigate('/answers/new');
   }
 
   return (
@@ -27,18 +18,26 @@ const Admin = ({ answers, changeCount, setChangeCount }: Props) => {
         <div className="list_add">
           <CgAddR className={"row-icons"} size={30} onClick={handleAddButtonClick} />
         </div>
-        {answers.map(({ _id, summary, info }) =>
-          <AnswerListRow
-            key={_id}
-            _id={_id}
-            summary={summary}
-            info={info}
-            onChangeList={onChangeList}
-          />
-        )}
+        <Suspense fallback={<h2>Loading...</h2>}>
+          <Await resolve={answers}>
+            {
+              (resolvedAnswers) => (
+                <>
+                  {resolvedAnswers.map(({ _id, summary, info }: Answer) =>
+                    <AnswerListRow
+                      key={_id}
+                      _id={_id}
+                      summary={summary}
+                      info={info}
+                    />
+                  )}
+                </>)
+            }
+          </Await>
+        </Suspense>
       </div>
     </>
   );
 };
 
-export default Admin;
+export { Admin };
